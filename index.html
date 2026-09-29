@@ -1,0 +1,762 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Corporate Finance - Lecture 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#0f172a', 800: '#1e293b', 700: '#334155' },
+                        teal: { 500: '#14b8a6', 600: '#0d9488' },
+                        orange: { 500: '#f97316', 600: '#ea580c' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700;800&display=swap');
+        body { font-family: 'Inter', 'Tajawal', system-ui, sans-serif; background-color: #f8fafc; color: #1e293b; }
+        html[lang="ar"] body { font-family: 'Tajawal', 'Inter', system-ui, sans-serif; }
+        .hero-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); position: relative; overflow: hidden; }
+        .hero-bg::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(20,184,166,0.1) 0%, transparent 50%); animation: pulse 15s infinite alternate; }
+        @keyframes pulse { 0% { transform: translate(0, 0); } 100% { transform: translate(10%, 10%); } }
+        .chevron-transition { transition: transform 0.3s ease; }
+        .rotate-180 { transform: rotate(180deg); }
+        .ar-block, .ar-inline { display: none; }
+        html[dir="rtl"] .en-block, html[dir="rtl"] .en-inline { display: none !important; }
+        html[dir="rtl"] .ar-block { display: block !important; }
+        html[dir="rtl"] .ar-inline { display: inline !important; }
+        html[dir="rtl"] table { text-align: right; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .formula-box { background: #f8fafc; border-left: 4px solid #14b8a6; padding: 1rem; border-radius: 0.5rem; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 1rem; color: #0f172a; overflow-x: auto; }
+        html[dir="rtl"] .formula-box { border-left: none; border-right: 4px solid #14b8a6; }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-navy-900/95 backdrop-blur-md border-b border-navy-700 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center gap-2">
+                    <svg class="w-8 h-8 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="text-white font-bold text-lg tracking-tight">
+                        <span class="en-inline">Corporate Finance</span>
+                        <span class="ar-inline">التمويل المؤسسي</span>
+                    </span>
+                </div>
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="#policy" class="text-gray-300 hover:bg-navy-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition"><span class="en-inline">Policy</span><span class="ar-inline">السياسة</span></a>
+                    <a href="#formulas" class="text-gray-300 hover:bg-navy-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition"><span class="en-inline">Formulas</span><span class="ar-inline">القوانين</span></a>
+                    <a href="#mm-notax" class="text-gray-300 hover:bg-navy-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition"><span class="en-inline">M&M (No Tax)</span><span class="ar-inline">نموذج م.م (بدون ضرائب)</span></a>
+                    <a href="#mm-tax" class="text-gray-300 hover:bg-navy-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition"><span class="en-inline">M&M (With Tax)</span><span class="ar-inline">نموذج م.م (مع ضرائب)</span></a>
+                    <a href="#tradeoff" class="text-gray-300 hover:bg-navy-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition"><span class="en-inline">Trade-Off</span><span class="ar-inline">المفاضلة</span></a>
+                    <a href="#approaches" class="text-gray-300 hover:bg-navy-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition"><span class="en-inline">Approaches</span><span class="ar-inline">الأساليب</span></a>
+                    <a href="#practice" class="bg-teal-600 text-white hover:bg-teal-500 px-4 py-2 rounded-md text-sm font-medium transition shadow-md"><span class="en-inline">Practice</span><span class="ar-inline">التدريب</span></a>
+                    <button id="lang-toggle" class="ms-2 px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-md text-sm font-bold transition border border-white/20 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="lang-label">AR</span>
+                    </button>
+                </div>
+                <div class="md:hidden flex items-center gap-2">
+                    <button id="lang-toggle-mobile" class="text-white p-2 bg-white/10 rounded-md text-xs font-bold border border-white/20"><span id="lang-label-mobile">AR</span></button>
+                    <button id="mobile-menu-btn" class="text-gray-300 hover:text-white p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden bg-navy-800 border-t border-navy-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#policy" class="text-gray-300 hover:bg-navy-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><span class="en-inline">Policy</span><span class="ar-inline">السياسة</span></a>
+                <a href="#formulas" class="text-gray-300 hover:bg-navy-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><span class="en-inline">Formulas</span><span class="ar-inline">القوانين</span></a>
+                <a href="#mm-notax" class="text-gray-300 hover:bg-navy-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><span class="en-inline">M&M (No Tax)</span><span class="ar-inline">نموذج م.م (بدون ضرائب)</span></a>
+                <a href="#mm-tax" class="text-gray-300 hover:bg-navy-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><span class="en-inline">M&M (With Tax)</span><span class="ar-inline">نموذج م.م (مع ضرائب)</span></a>
+                <a href="#tradeoff" class="text-gray-300 hover:bg-navy-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><span class="en-inline">Trade-Off</span><span class="ar-inline">المفاضلة</span></a>
+                <a href="#approaches" class="text-gray-300 hover:bg-navy-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"><span class="en-inline">Approaches</span><span class="ar-inline">الأساليب</span></a>
+                <a href="#practice" class="bg-teal-600 text-white block px-3 py-2 rounded-md text-base font-medium text-center mt-2"><span class="en-inline">Practice</span><span class="ar-inline">التدريب</span></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-bg text-white py-20 md:py-32 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-20">
+            <div class="inline-block px-4 py-1.5 bg-teal-500/20 border border-teal-500/30 rounded-full text-teal-400 text-sm font-semibold mb-6 tracking-wide">
+                <span class="en-inline">LECTURE 2</span>
+                <span class="ar-inline">المحاضرة الثانية</span>
+            </div>
+            <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
+                <span class="en-inline">Advanced Corporate Finance</span>
+                <span class="ar-inline">التمويل المؤسسي المتقدم</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-300 font-light max-w-3xl mx-auto mb-8">
+                <span class="en-inline">Chapter 13: Leverage and Capital Structure</span>
+                <span class="ar-inline">الفصل الثالث عشر: الرافعة المالية وهيكل رأس المال</span>
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#policy" class="px-8 py-3 bg-teal-600 hover:bg-teal-500 text-white font-semibold rounded-lg shadow-lg transition-all transform hover:-translate-y-0.5">
+                    <span class="en-inline">Start Learning</span>
+                    <span class="ar-inline">ابدأ التعلم</span>
+                </a>
+                <a href="#practice" class="px-8 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-lg border border-white/20 transition-all">
+                    <span class="en-inline">Practice Questions</span>
+                    <span class="ar-inline">أسئلة للتدريب</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-24">
+
+        <!-- Class Policy & Grades -->
+        <section id="policy" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+                    <span class="en-block">Class Policy & Discipline</span>
+                    <span class="ar-block">سياسة الفصل والانضباط</span>
+                </h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        <span class="en-inline">Rules & Discipline</span>
+                        <span class="ar-inline">القواعد والانضباط</span>
+                    </h3>
+                    <ul class="space-y-3 text-gray-600 leading-relaxed">
+                        <li class="flex items-start gap-2"><span class="text-orange-500 mt-1">•</span><span class="en-block"><strong>Absence:</strong> After 4 times absence, student will be warned and repeated absences can affect his/her ability to fulfill the objectives of the module, and forced withdrawal will be implemented.</span><span class="ar-block"><strong>الغياب:</strong> بعد 4 مرات غياب، سيتم تحذير الطالب والغياب المتكرر يمكن أن يؤثر على قدرته على تحقيق أهداف المقرر، وسيتم تطبيق الانسحاب القسري.</span></li>
+                        <li class="flex items-start gap-2"><span class="text-orange-500 mt-1">•</span><span class="en-block"><strong>Extra curricula activities:</strong> students are in need to grant attendance to extra curricula activities, and bonus will be granted.</span><span class="ar-block"><strong>الأنشطة اللاصفية:</strong> يُطلب من الطلاب حضور الأنشطة اللاصفية، وسيتم منح مكافآت.</span></li>
+                        <li class="flex items-start gap-2"><span class="text-orange-500 mt-1">•</span><span class="en-block"><strong>Discipline:</strong> Students are in need to behave well at the class, and any violation to instructor command, will receive deduction of marks; and if repeated, student will be asked to leave the class and his/her attendance will be cancelled.</span><span class="ar-block"><strong>الانضباط:</strong> يُطلب من الطلاب حسن السلوك في الفصل، وأي مخالفة لأوامر المحاضر ستؤدي إلى خصم درجات؛ وإذا تكررت، سيُطلب من الطالب مغادرة الفصل وإلغاء حضوره.</span></li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-4 flex items-center gap-2">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                        <span class="en-inline">Grades’ Scheme</span>
+                        <span class="ar-inline">خطة التقييم</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-start">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr>
+                                    <th class="px-4 py-3 text-sm font-semibold text-gray-700 uppercase tracking-wider text-start"><span class="en-inline">Component</span><span class="ar-inline">المكون</span></th>
+                                    <th class="px-4 py-3 text-sm font-semibold text-gray-700 uppercase tracking-wider text-start"><span class="en-inline">Marks</span><span class="ar-inline">الدرجات</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">TOD 2</span><span class="ar-inline">واجب 2</span></td><td class="px-4 py-3 text-sm font-bold text-teal-600">5</td></tr>
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">TOD 1</span><span class="ar-inline">واجب 1</span></td><td class="px-4 py-3 text-sm font-bold text-teal-600">5</td></tr>
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">Quiz 1</span><span class="ar-inline">اختبار قصير 1</span></td><td class="px-4 py-3 text-sm font-bold text-teal-600">5</td></tr>
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">Quiz 2</span><span class="ar-inline">اختبار قصير 2</span></td><td class="px-4 py-3 text-sm font-bold text-teal-600">5</td></tr>
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">Midterm 1</span><span class="ar-inline">امتحان نصفي 1</span></td><td class="px-4 py-3 text-sm font-bold text-orange-600">20</td></tr>
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">Midterm 2</span><span class="ar-inline">امتحان نصفي 2</span></td><td class="px-4 py-3 text-sm font-bold text-orange-600">20</td></tr>
+                                <tr><td class="px-4 py-3 text-sm text-gray-600"><span class="en-inline">Final term</span><span class="ar-inline">الامتحان النهائي</span></td><td class="px-4 py-3 text-sm font-bold text-red-600">40</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Formulas -->
+        <section id="formulas" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+                    <span class="en-block">Key Formulas</span>
+                    <span class="ar-block">القوانين الأساسية</span>
+                </h2>
+            </div>
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">
+                <table class="w-full text-start min-w-[600px]">
+                    <thead class="bg-navy-900 text-white">
+                        <tr>
+                            <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-start"><span class="en-inline">Concept</span><span class="ar-inline">المفهوم</span></th>
+                            <th class="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-start"><span class="en-inline">Formula</span><span class="ar-inline">القانون</span></th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 font-mono text-sm">
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">Debt-to-Equity Ratio</span><span class="ar-inline">نسبة الدين إلى حقوق الملكية</span></td><td class="px-4 py-3">D/E = Total Debt / Total Equity</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">M&M Proposition I (No Taxes)</span><span class="ar-inline">مقترح م.م الأول (بدون ضرائب)</span></td><td class="px-4 py-3">V<sub>L</sub> = V<sub>U</sub> &nbsp;&nbsp;|&nbsp;&nbsp; V<sub>U</sub> = EBIT / K<sub>eu</sub></td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">M&M Proposition II (No Taxes)</span><span class="ar-inline">مقترح م.م الثاني (بدون ضرائب)</span></td><td class="px-4 py-3">K<sub>e</sub> = K<sub>eu</sub> + (K<sub>eu</sub> − K<sub>d</sub>) × (D/E)</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">M&M Proposition I (With Taxes)</span><span class="ar-inline">مقترح م.م الأول (مع ضرائب)</span></td><td class="px-4 py-3">V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub> × D</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">M&M Proposition II (With Taxes)</span><span class="ar-inline">مقترح م.م الثاني (مع ضرائب)</span></td><td class="px-4 py-3">K<sub>e</sub> = K<sub>eu</sub> + (1 − T<sub>c</sub>)(K<sub>eu</sub> − K<sub>d</sub>)(D/E)</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">Trade-off Theory (Value)</span><span class="ar-inline">نظرية المفاضلة (القيمة)</span></td><td class="px-4 py-3">V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub>D − PV(Distress Costs)</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">WACC</span><span class="ar-inline">متوسط الوزن المرجح لتكلفة رأس المال</span></td><td class="px-4 py-3">WACC = (E/V)K<sub>e</sub> + [(D/V)K<sub>d</sub>(1 − T<sub>c</sub>)]</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">EBIT-EPS Indifference Point</span><span class="ar-inline">نقطة تعادل الربح قبل الفوائد والضرائب وربح السهم</span></td><td class="px-4 py-3">(EBIT − I<sub>1</sub>)(1−T)/E<sub>1</sub> = (EBIT − I<sub>2</sub>)(1−T)/E<sub>2</sub></td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">Zero Growth Model</span><span class="ar-inline">نموذج النمو الصفري</span></td><td class="px-4 py-3">P = EPS / r</td></tr>
+                        <tr class="hover:bg-gray-50"><td class="px-4 py-3 font-sans font-medium text-navy-900"><span class="en-inline">Interest & Equity Earnings</span><span class="ar-inline">الفائدة وأرباح حقوق الملكية</span></td><td class="px-4 py-3">I = D × K<sub>d</sub> &nbsp;&nbsp;|&nbsp;&nbsp; Equity Earnings = EBIT − I</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Capital Structure Theory Intro -->
+        <section class="scroll-mt-20">
+            <div class="bg-gradient-to-br from-navy-900 to-navy-800 text-white p-8 md:p-10 rounded-2xl shadow-lg">
+                <h2 class="text-2xl md:text-3xl font-bold mb-4 text-teal-400">
+                    <span class="en-block">Capital Structure Theory</span>
+                    <span class="ar-block">نظرية هيكل رأس المال</span>
+                </h2>
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    <span class="en-block">All of the items on the right-hand side of the firm’s balance sheet, excluding current liabilities, are sources of capital. The simplified balance sheet illustrates the basic breakdown of total capital into its two components, debt capital and equity capital.</span>
+                    <span class="ar-block">جميع البنود الموجودة على الجانب الأيمن من الميزانية العمومية للشركة، باستثناء الخصوم المتداولة، هي مصادر لرأس المال. توضح الميزانية العمومية المبسطة التقسيم الأساسي لإجمالي رأس المال إلى مكونيه: رأس مال الديون ورأس مال حقوق الملكية.</span>
+                </p>
+                <p class="text-lg font-semibold text-white">
+                    <span class="en-inline">Includes:</span>
+                    <span class="ar-inline">تشمل:</span>
+                </p>
+                <ul class="list-disc list-inside space-y-2 text-gray-300 mt-2 ms-2">
+                    <li><span class="en-inline">A. Modigliani and Miller (M&M) Propositions</span><span class="ar-inline">أ. مقترحات موديلياني وميلر (م.م)</span></li>
+                    <li><span class="en-inline">B. Trade-off theory</span><span class="ar-inline">ب. نظرية المفاضلة</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- M&M Propositions (No Taxes) -->
+        <section id="mm-notax" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+                    <span class="en-block">A. Modigliani and Miller (M&M) Propositions (No Taxes, 1958)</span>
+                    <span class="ar-block">أ. مقترحات موديلياني وميلر (بدون ضرائب، 1958)</span>
+                </h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Prop I -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-3"><span class="en-inline">M&M Proposition I (No Taxes):</span><span class="ar-inline">مقترح م.م الأول (بدون ضرائب):</span></h3>
+                    <div class="formula-box mb-4">V<sub>L</sub> = V<sub>U</sub></div>
+                    <ul class="text-gray-600 space-y-1">
+                        <li><span class="en-inline">• V<sub>L</sub> is the value of a levered firm</span><span class="ar-inline">• V<sub>L</sub> هي قيمة الشركة المستخدمة للرافعة المالية</span></li>
+                        <li><span class="en-inline">• V<sub>U</sub> is the value of an unlevered firm</span><span class="ar-inline">• V<sub>U</sub> هي قيمة الشركة غير المستخدمة للرافعة المالية (الخالية من الديون)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Example 1 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">Example</span><span class="ar-inline">مثال</span></h3>
+                    <ul class="text-gray-600 space-y-2 mb-4">
+                        <li><span class="en-inline">• Two firms, U and L, have identical assets and business risk</span><span class="ar-inline">• شركتان، أ (غير مستخدمة للرافعة) و ل (مستخدمة للرافعة)، لهما أصول ومخاطر أعمال متطابقة</span></li>
+                        <li><span class="en-inline">• Expected EBIT = $1,000,000 per year forever</span><span class="ar-inline">• الربح قبل الفوائد والضرائب (EBIT) المتوقع = 1,000,000 دولار سنوياً إلى الأبد</span></li>
+                        <li><span class="en-inline">• Unlevered cost of equity, K<sub>eu</sub> = 10%</span><span class="ar-inline">• تكلفة حقوق الملكية بدون رافعة، ك<sub>eu</sub> = 10%</span></li>
+                        <li><span class="en-inline">• Firm L has $4,000,000 perpetual debt at K<sub>d</sub> = 5%, while Firm U is all-equity financed.</span><span class="ar-inline">• الشركة ل لديها ديون أبدية بقيمة 4,000,000 دولار بتكلفة ك<sub>d</sub> = 5%، بينما الشركة أ ممولة بالكامل بحقوق الملكية.</span></li>
+                    </ul>
+                    <p class="font-bold text-navy-900 mb-2"><span class="en-inline">Required: Calculate 1- Value of unlevered company, 2- Value of Equity, 3- Interest, Equity earnings, and Cost of equity for L.</span><span class="ar-inline">المطلوب: احسب 1- قيمة الشركة غير المستخدمة للرافعة، 2- قيمة حقوق الملكية، 3- الفائدة، أرباح حقوق الملكية، وتكلفة حقوق الملكية للشركة ل.</span></p>
+                    <button onclick="toggleMath('ex1')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="en-inline">Reveal Solution</span>
+                        <span class="ar-inline">عرض الحل</span>
+                    </button>
+                    <div id="ex1" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-3 text-navy-900 font-mono">
+                        <p><strong class="text-teal-700 font-sans"><span class="en-inline">1- Value of unlevered company (V<sub>U</sub>):</span><span class="ar-inline">1- قيمة الشركة غير المستخدمة للرافعة (V<sub>U</sub>):</span></strong></p>
+                        <p>V<sub>U</sub> = EBIT / K<sub>eu</sub> = 1,000,000 / 0.10 = <span class="text-green-600 font-bold">$10,000,000</span></p>
+                        
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">2- Value of Equity (E):</span><span class="ar-inline">2- قيمة حقوق الملكية (E):</span></strong></p>
+                        <p>Since V<sub>L</sub> = V<sub>U</sub> = $10,000,000 and Firm L has debt of $4,000,000:</p>
+                        <p>E = V<sub>L</sub> − D = 10,000,000 − 4,000,000 = <span class="text-green-600 font-bold">$6,000,000</span></p>
+
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">3- For Firm L:</span><span class="ar-inline">3- للشركة ل:</span></strong></p>
+                        <p>Interest expense: I = D × K<sub>d</sub> = 4,000,000 × 5% = <span class="text-orange-600 font-bold">$200,000</span></p>
+                        <p>Equity earnings: EBIT − I = 1,000,000 − 200,000 = <span class="text-orange-600 font-bold">$800,000</span></p>
+                        <p>Cost of equity: K<sub>e</sub> = 800,000 / 6,000,000 = <span class="text-green-600 font-bold text-base">13.333%</span></p>
+                    </div>
+                </div>
+
+                <!-- Prop II -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-3"><span class="en-inline">M&M Propositions II (No Taxes)</span><span class="ar-inline">مقترح م.م الثاني (بدون ضرائب)</span></h3>
+                    <p class="text-gray-600 mb-4"><span class="en-inline">The cost of equity increases with leverage because shareholders demand a higher return for the increased financial risk. The WACC remains constant.</span><span class="ar-inline">تزداد تكلفة حقوق الملكية مع الرافعة المالية لأن المساهمين يطلبون عائداً أعلى بسبب زيادة المخاطر المالية. يظل متوسط تكلفة رأس المال (WACC) ثابتاً.</span></p>
+                    <div class="formula-box mb-4">K<sub>e</sub> = K<sub>eu</sub> + (K<sub>eu</sub> − K<sub>d</sub>) × (D/E)</div>
+                    <ul class="text-gray-600 space-y-1 text-sm">
+                        <li><span class="en-inline">• K<sub>e</sub> = cost of equity of a levered firm</span><span class="ar-inline">• ك<sub>e</sub> = تكلفة حقوق الملكية للشركة المستخدمة للرافعة</span></li>
+                        <li><span class="en-inline">• K<sub>eu</sub> = cost of equity of an unlevered firm</span><span class="ar-inline">• ك<sub>eu</sub> = تكلفة حقوق الملكية للشركة غير المستخدمة للرافعة</span></li>
+                        <li><span class="en-inline">• K<sub>d</sub> = cost of debt</span><span class="ar-inline">• ك<sub>d</sub> = تكلفة الدين</span></li>
+                        <li><span class="en-inline">• D/E = debt-to-equity ratio</span><span class="ar-inline">• د/هـ = نسبة الدين إلى حقوق الملكية</span></li>
+                    </ul>
+                </div>
+
+                <!-- WACC Calculation -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">WACC Calculation (Based on previous example)</span><span class="ar-inline">حساب متوسط تكلفة رأس المال (بناءً على المثال السابق)</span></h3>
+                    <button onclick="toggleMath('wacc1')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="en-inline">Reveal Calculation</span>
+                        <span class="ar-inline">عرض الحساب</span>
+                    </button>
+                    <div id="wacc1" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-3 text-navy-900 font-mono">
+                        <p><strong class="text-teal-700 font-sans"><span class="en-inline">Using M&M Proposition II:</span><span class="ar-inline">باستخدام مقترح م.م الثاني:</span></strong></p>
+                        <p>K<sub>e</sub> = 10% + (10% − 5%)(4,000,000 / 6,000,000) = <span class="text-green-600 font-bold">13.333%</span></p>
+                        
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-orange-700 font-sans"><span class="en-inline">WACC:</span><span class="ar-inline">متوسط تكلفة رأس المال:</span></strong></p>
+                        <p>WACC = (6/10)(13.333%) + (4/10)(5%) = 8% + 2% = <span class="text-green-600 font-bold text-base">10%</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- M&M with Corporate Taxes -->
+        <section id="mm-tax" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+                    <span class="en-block">M&M with Corporate Taxes (1963)</span>
+                    <span class="ar-block">نموذج م.م مع ضرائب الشركات (1963)</span>
+                </h2>
+            </div>
+
+            <div class="space-y-8">
+                <!-- Prop I With Tax -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-3"><span class="en-inline">Proposition I (with taxes):</span><span class="ar-inline">المقترح الأول (مع الضرائب):</span></h3>
+                    <p class="text-gray-600 mb-4"><span class="en-inline">When taxes are introduced, debt becomes valuable because interest payments are tax-deductible.</span><span class="ar-inline">عند إدخال الضرائب، تصبح الديون ذات قيمة لأن مدفوعات الفائدة قابلة للخصم الضريبي.</span></p>
+                    <div class="formula-box mb-4">V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub> × D</div>
+                    <ul class="text-gray-600 space-y-1 text-sm">
+                        <li><span class="en-inline">• T<sub>c</sub> is the corporate tax rate</span><span class="ar-inline">• T<sub>c</sub> هو معدل ضريبة الشركات</span></li>
+                        <li><span class="en-inline">• T<sub>c</sub> × D is the present value of the interest tax shield.</span><span class="ar-inline">• T<sub>c</sub> × D هي القيمة الحالية للدرع الضريبي للفائدة.</span></li>
+                    </ul>
+                </div>
+
+                <!-- Prop II With Tax -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-3"><span class="en-inline">Proposition II (with taxes):</span><span class="ar-inline">المقترح الثاني (مع الضرائب):</span></h3>
+                    <p class="text-gray-600 mb-4"><span class="en-inline">The WACC declines as debt increases because the tax shield lowers the effective cost of debt.</span><span class="ar-inline">ينخفض متوسط تكلفة رأس المال (WACC) مع زيادة الديون لأن الدرع الضريبي يخفض التكلفة الفعالة للدين.</span></p>
+                    <div class="formula-box">K<sub>e</sub> = K<sub>eu</sub> + (1 − T<sub>c</sub>) × (K<sub>eu</sub> − K<sub>d</sub>) × (D/E)</div>
+                </div>
+
+                <!-- Example 2 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">Example</span><span class="ar-inline">مثال</span></h3>
+                    <p class="text-gray-600 mb-4"><span class="en-inline">Firm A is currently an all-equity firm (unlevered). Its value is V<sub>U</sub> = $10,000,000. The corporate tax rate is T<sub>c</sub> = 25%. The unlevered cost of equity is K<sub>eu</sub> = 12%. The firm decides to issue $3,000,000 in perpetual debt at a cost of K<sub>d</sub> = 6% and use the proceeds to repurchase equity.</span><span class="ar-inline">الشركة أ حالياً شركة ممولة بالكامل بحقوق الملكية (غير مستخدمة للرافعة). قيمتها V<sub>U</sub> = 10,000,000 دولار. معدل ضريبة الشركات T<sub>c</sub> = 25%. تكلفة حقوق الملكية بدون رافعة ك<sub>eu</sub> = 12%. تقرر الشركة إصدار ديون أبدية بقيمة 3,000,000 دولار بتكلفة ك<sub>d</sub> = 6% واستخدام العوائد لإعادة شراء حقوق الملكية.</span></p>
+                    <button onclick="toggleMath('ex2')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="en-inline">Reveal Solution</span>
+                        <span class="ar-inline">عرض الحل</span>
+                    </button>
+                    <div id="ex2" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-3 text-navy-900 font-mono">
+                        <p><strong class="text-teal-700 font-sans"><span class="en-inline">1. Value of the levered firm (V<sub>L</sub>):</span><span class="ar-inline">1. قيمة الشركة المستخدمة للرافعة (V<sub>L</sub>):</span></strong></p>
+                        <p>V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub> × D = 10,000,000 + (0.25 × 3,000,000) = <span class="text-green-600 font-bold">$10,750,000</span></p>
+                        
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">2. Market value of equity (E):</span><span class="ar-inline">2. القيمة السوقية لحقوق الملكية (E):</span></strong></p>
+                        <p>E = V<sub>L</sub> − D = 10,750,000 − 3,000,000 = <span class="text-green-600 font-bold">$7,750,000</span></p>
+
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">3. Debt-to-equity ratio (D/E):</span><span class="ar-inline">3. نسبة الدين إلى حقوق الملكية (D/E):</span></strong></p>
+                        <p>D/E = 3,000,000 / 7,750,000 ≈ <span class="text-green-600 font-bold">0.3871</span></p>
+
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">4. New cost of equity (K<sub>e</sub>):</span><span class="ar-inline">4. تكلفة حقوق الملكية الجديدة (K<sub>e</sub>):</span></strong></p>
+                        <p>K<sub>e</sub> = K<sub>eu</sub> + (1 − T<sub>c</sub>) × (K<sub>eu</sub> − K<sub>d</sub>) × D/E</p>
+                        <p>= 12% + (1 − 0.25) × (12% − 6%) × 0.3871</p>
+                        <p>= 12% + 1.742% = <span class="text-green-600 font-bold text-base">13.742%</span></p>
+                    </div>
+                </div>
+
+                <!-- Example 3 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">Example</span><span class="ar-inline">مثال</span></h3>
+                    <p class="text-gray-600 mb-4"><span class="en-inline">An unlevered company has a cost of equity of 15%. It takes a loan at 10% and uses it to buy back equity, resulting in a D/E ratio of 1:1. The corporate tax rate is 20%. Calculate the new cost of equity and new WACC.</span><span class="ar-inline">شركة غير مستخدمة للرافعة لديها تكلفة حقوق ملكية بنسبة 15%. تأخذ قرضاً بنسبة 10% وتستخدمه لإعادة شراء حقوق الملكية، مما يؤدي إلى نسبة دين إلى حقوق ملكية 1:1. معدل ضريبة الشركات هو 20%. احسب تكلفة حقوق الملكية الجديدة ومتوسط تكلفة رأس المال الجديد.</span></p>
+                    <button onclick="toggleMath('ex3')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="en-inline">Reveal Solution</span>
+                        <span class="ar-inline">عرض الحل</span>
+                    </button>
+                    <div id="ex3" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-3 text-navy-900 font-mono">
+                        <p><strong class="text-teal-700 font-sans"><span class="en-inline">New cost of equity:</span><span class="ar-inline">تكلفة حقوق الملكية الجديدة:</span></strong></p>
+                        <p>K<sub>e</sub> = 15% + (1 − 0.20) × (15% − 10%) × 1 = 15% + 4% = <span class="text-green-600 font-bold">20%</span></p>
+                        
+                        <p class="pt-2 border-t border-gray-200"><strong class="text-orange-700 font-sans"><span class="en-inline">New WACC:</span><span class="ar-inline">متوسط تكلفة رأس المال الجديد:</span></strong></p>
+                        <p>WACC = (0.5 × 20%) + (0.5 × 10% × (1 − 0.20))</p>
+                        <p>= 10% + 4% = <span class="text-green-600 font-bold text-base">14%</span></p>
+                        <p class="font-sans text-gray-700 pt-2"><span class="en-inline">The lower WACC increases firm value, illustrating the benefit of debt under a tax regime.</span><span class="ar-inline">انخفاض متوسط تكلفة رأس المال يزيد من قيمة الشركة، مما يوضح فائدة الديون في ظل النظام الضريبي.</span></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trade-Off Theory -->
+        <section id="tradeoff" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+                    <span class="en-block">B. Trade-Off Theory</span>
+                    <span class="ar-block">ب. نظرية المفاضلة</span>
+                </h2>
+            </div>
+
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+                <h3 class="text-xl font-bold text-navy-900 mb-3"><span class="en-inline">Formula (with distress costs):</span><span class="ar-inline">القانون (مع تكاليف الضائقة):</span></h3>
+                <div class="formula-box mb-4">V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub> × D − PV of Financial Distress Costs</div>
+                <p class="text-gray-600"><span class="en-inline"><strong>Implication:</strong> Firms should use moderate levels of debt, not 100% debt, because excessive leverage increases bankruptcy risk.</span><span class="ar-inline"><strong>الاستنتاج:</strong> يجب على الشركات استخدام مستويات معتدلة من الديون، وليس ديوناً بنسبة 100%، لأن الرافعة المالية المفرطة تزيد من مخاطر الإفلاس.</span></p>
+            </div>
+
+            <!-- Trade-Off Example -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">Example: ABC Company</span><span class="ar-inline">مثال: شركة ABC</span></h3>
+                <p class="text-gray-600 mb-4"><span class="en-inline">ABC is currently unlevered. Its unlevered cost of equity is K<sub>eu</sub> = 14%. It plans to issue debt at K<sub>d</sub> = 8%. The tax rate is T<sub>c</sub> = 30%. The firm’s unlevered value is V<sub>U</sub> = $5,000,000. It will issue $1,000,000 of debt and use the proceeds to repurchase equity. After the recapitalization: Debt D = $1,000,000 & Equity E = $4,000,000.</span><span class="ar-inline">شركة ABC حالياً غير مستخدمة للرافعة. تكلفة حقوق الملكية بدون رافعة ك<sub>eu</sub> = 14%. تخطط لإصدار ديون بتكلفة ك<sub>d</sub> = 8%. معدل الضريبة T<sub>c</sub> = 30%. قيمة الشركة بدون رافعة V<sub>U</sub> = 5,000,000 دولار. ستصدر ديوناً بقيمة 1,000,000 دولار وتستخدم العوائد لإعادة شراء حقوق الملكية. بعد إعادة هيكلة رأس المال: الديون د = 1,000,000 دولار وحقوق الملكية هـ = 4,000,000 دولار.</span></p>
+                <button onclick="toggleMath('ex4')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <span class="en-inline">Reveal Solution (A to G)</span>
+                    <span class="ar-inline">عرض الحل (من أ إلى ج)</span>
+                </button>
+                <div id="ex4" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-4 text-navy-900 font-mono">
+                    <p><strong class="text-teal-700 font-sans"><span class="en-inline">A. Debt-to-equity ratio D/E:</span><span class="ar-inline">أ. نسبة الدين إلى حقوق الملكية د/هـ:</span></strong></p>
+                    <p>D/E = 1,000,000 / 4,000,000 = <span class="text-green-600 font-bold">0.25</span></p>
+                    
+                    <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">B. V<sub>L</sub> (M&M without taxes):</span><span class="ar-inline">ب. V<sub>L</sub> (م.م بدون ضرائب):</span></strong></p>
+                    <p>V<sub>L</sub> = V<sub>U</sub> = <span class="text-green-600 font-bold">$5,000,000</span></p>
+
+                    <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">C. K<sub>e</sub> (M&M without taxes):</span><span class="ar-inline">ج. ك<sub>e</sub> (م.م بدون ضرائب):</span></strong></p>
+                    <p>K<sub>e</sub> = K<sub>eu</sub> + (K<sub>eu</sub> − K<sub>d</sub>) D/E = 14% + (14% − 8%)(0.25) = <span class="text-green-600 font-bold">15.5%</span></p>
+
+                    <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">D. V<sub>L</sub> (M&M with taxes):</span><span class="ar-inline">د. V<sub>L</sub> (م.م مع ضرائب):</span></strong></p>
+                    <p>V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub>D = 5,000,000 + 0.30(1,000,000) = <span class="text-green-600 font-bold">$5,300,000</span></p>
+
+                    <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">E. K<sub>e</sub> (M&M with taxes):</span><span class="ar-inline">هـ. ك<sub>e</sub> (م.م مع ضرائب):</span></strong></p>
+                    <p>K<sub>e</sub> = K<sub>eu</sub> + (1 − T<sub>c</sub>)(K<sub>eu</sub> − K<sub>d</sub>) D/E = 14% + (1 − 0.30)(14% − 8%)(0.25) = 14% + 1.05% = <span class="text-green-600 font-bold">15.05%</span></p>
+
+                    <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">F. V<sub>L</sub> (Trade-off Theory, PV of Distress = $150,000):</span><span class="ar-inline">و. V<sub>L</sub> (نظرية المفاضلة، القيمة الحالية لتكاليف الضائقة = 150,000 دولار):</span></strong></p>
+                    <p>V<sub>L</sub> = V<sub>U</sub> + T<sub>c</sub>D − PV(Distress) = 5,000,000 + 0.30(1,000,000) − 150,000 = <span class="text-green-600 font-bold">$5,150,000</span></p>
+
+                    <p class="pt-2 border-t border-gray-200"><strong class="text-teal-700 font-sans"><span class="en-inline">G. WACC (using with-taxes K<sub>e</sub> from part E):</span><span class="ar-inline">ز. متوسط تكلفة رأس المال (باستخدام ك<sub>e</sub> مع الضرائب من الجزء هـ):</span></strong></p>
+                    <p>WACC = (E/V)K<sub>e</sub> + (D/V)K<sub>d</sub>(1 − T<sub>c</sub>)</p>
+                    <p>= (4/5)(15.05%) + (1/5)(8%)(1 − 0.30) = 12.04% + 1.12% = <span class="text-green-600 font-bold text-base">13.16%</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Approaches to Capital Structure -->
+        <section id="approaches" class="scroll-mt-20">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-navy-900 mb-4">
+                    <span class="en-block">Approaches to Capital Structure</span>
+                    <span class="ar-block">أساليب هيكل رأس المال</span>
+                </h2>
+            </div>
+
+            <!-- EBIT-EPS Approach -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-10">
+                <h3 class="text-2xl font-bold text-navy-900 mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                    <span class="en-inline">EBIT-EPS Approach</span>
+                    <span class="ar-inline">أسلوب الربح قبل الفوائد والضرائب وربح السهم (EBIT-EPS)</span>
+                </h3>
+                
+                <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 mb-6">
+                    <p class="font-bold text-navy-900 mb-2"><span class="en-inline">Income Statement Format:</span><span class="ar-inline">تنسيق قائمة الدخل:</span></p>
+                    <ul class="text-sm text-gray-600 space-y-1 font-mono">
+                        <li><span class="en-inline">Sales revenues</span><span class="ar-inline">إيرادات المبيعات</span></li>
+                        <li><span class="en-inline">(-) COGS = Gross profit</span><span class="ar-inline">(-) تكلفة البضاعة المباعة = إجمالي الربح</span></li>
+                        <li><span class="en-inline">(-) Operating Expenses = Operating profit (EBIT)</span><span class="ar-inline">(-) مصروفات التشغيل = الربح التشغيلي (EBIT)</span></li>
+                        <li><span class="en-inline">(-) Interest = Profit Before Tax</span><span class="ar-inline">(-) الفائدة = الربح قبل الضريبة</span></li>
+                        <li><span class="en-inline">(-) Tax @ % = Profit After Tax</span><span class="ar-inline">(-) الضريبة @ % = الربح بعد الضريبة</span></li>
+                        <li><span class="en-inline">(-) Preference Dividend = Earnings to Equity</span><span class="ar-inline">(-) أرباح الأسهم الممتازة = الأرباح العائدة لحقوق الملكية</span></li>
+                        <li><span class="en-inline">(÷) Number of Shares = EPS</span><span class="ar-inline">(÷) عدد الأسهم = ربح السهم (EPS)</span></li>
+                    </ul>
+                </div>
+
+                <h4 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">Example</span><span class="ar-inline">مثال</span></h4>
+                <ul class="text-gray-600 space-y-2 mb-4">
+                    <li><span class="en-inline">• Existing Capital Structure: Debt of ₹3,600,000 at 10% interest.</span><span class="ar-inline">• هيكل رأس المال الحالي: ديون بقيمة 3,600,000 روبية بفائدة 10%.</span></li>
+                    <li><span class="en-inline">• Expansion Requirement: ₹4,000,000 needed for expansion.</span><span class="ar-inline">• متطلبات التوسع: مطلوب 4,000,000 روبية للتوسع.</span></li>
+                    <li><span class="en-inline">• Tax Rate: 40%. Current EBIT: ₹1,500,000. Current Number of Shares: 800,000.</span><span class="ar-inline">• معدل الضريبة: 40%. الربح قبل الفوائد والضرائب الحالي: 1,500,000 روبية. عدد الأسهم الحالي: 800,000.</span></li>
+                </ul>
+                <p class="font-bold text-navy-900 mb-4"><span class="en-inline">Required: 1] Apply alternative Financing Plans (I: Debt 12%, II: Pref Shares 440,000 LE, III: Equity 250,000 shares). 2] Calculate EPS. 3] Calculate EBIT Indifference point.</span><span class="ar-inline">المطلوب: 1] تطبيق خطط التمويل البديلة (الأولى: ديون 12%، الثانية: أسهم ممتازة 440,000 جنيه، الثالثة: أس عادية 250,000 سهم). 2] حساب ربح السهم. 3] حساب نقطة تعادل الربح قبل الفوائد والضرائب.</span></p>
+                
+                <button onclick="toggleMath('ex5')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <span class="en-inline">Reveal Solution</span>
+                    <span class="ar-inline">عرض الحل</span>
+                </button>
+                <div id="ex5" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-6 text-navy-900">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-start border border-gray-200 min-w-[600px]">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-4 py-2 border-b text-start font-semibold text-gray-700"><span class="en-inline">Item</span><span class="ar-inline">البند</span></th>
+                                    <th class="px-4 py-2 border-b text-start font-semibold text-teal-700"><span class="en-inline">Alt I: Debt</span><span class="ar-inline">البديل الأول: ديون</span></th>
+                                    <th class="px-4 py-2 border-b text-start font-semibold text-orange-700"><span class="en-inline">Alt II: Pref Shares</span><span class="ar-inline">البديل الثاني: أسهم ممتازة</span></th>
+                                    <th class="px-4 py-2 border-b text-start font-semibold text-blue-700"><span class="en-inline">Alt III: Equity</span><span class="ar-inline">البديل الثالث: أسهم عادية</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 font-mono text-xs">
+                                <tr><td class="px-4 py-2 font-sans font-medium">EBIT</td><td class="px-4 py-2">1,500,000</td><td class="px-4 py-2">1,500,000</td><td class="px-4 py-2">1,500,000</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">Interest</span><span class="ar-inline">الفائدة</span></td><td class="px-4 py-2">(840,000)</td><td class="px-4 py-2">(360,000)</td><td class="px-4 py-2">(360,000)</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">Profit Before Tax</span><span class="ar-inline">الربح قبل الضريبة</span></td><td class="px-4 py-2">660,000</td><td class="px-4 py-2">1,140,000</td><td class="px-4 py-2">1,140,000</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">Tax @ 40%</span><span class="ar-inline">الضريبة @ 40%</span></td><td class="px-4 py-2">(264,000)</td><td class="px-4 py-2">(456,000)</td><td class="px-4 py-2">(456,000)</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">Profit After Tax</span><span class="ar-inline">الربح بعد الضريبة</span></td><td class="px-4 py-2">396,000</td><td class="px-4 py-2">684,000</td><td class="px-4 py-2">684,000</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">Pref Dividend</span><span class="ar-inline">أرباح الأسهم الممتازة</span></td><td class="px-4 py-2">–</td><td class="px-4 py-2">(440,000)</td><td class="px-4 py-2">–</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">Earnings to Equity</span><span class="ar-inline">الأرباح العائدة للملكية</span></td><td class="px-4 py-2">396,000</td><td class="px-4 py-2">244,000</td><td class="px-4 py-2">684,000</td></tr>
+                                <tr><td class="px-4 py-2 font-sans font-medium"><span class="en-inline">No. of Shares</span><span class="ar-inline">عدد الأسهم</span></td><td class="px-4 py-2">800,000</td><td class="px-4 py-2">800,000</td><td class="px-4 py-2">1,050,000</td></tr>
+                                <tr class="bg-gray-50 font-bold"><td class="px-4 py-2 font-sans">EPS</td><td class="px-4 py-2 text-teal-700">₹0.495</td><td class="px-4 py-2 text-orange-700">₹0.305</td><td class="px-4 py-2 text-blue-700">₹0.651</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pt-4 border-t border-gray-200 font-sans">
+                        <p class="font-bold text-navy-900 mb-2"><span class="en-inline">Indifference Point (Debt vs. Equity):</span><span class="ar-inline">نقطة التعادل (الديون مقابل حقوق الملكية):</span></p>
+                        <p class="font-mono text-sm">(EBIT - 840,000) / 800,000 = (EBIT - 360,000) / 1,050,000</p>
+                        <p class="font-mono text-sm mb-2">EBIT ≈ <span class="text-green-600 font-bold">₹2,400,000</span></p>
+                        <ul class="list-disc list-inside text-gray-600 text-sm space-y-1 ms-2">
+                            <li><span class="en-inline">If expected EBIT > ₹2,400,000, the debt plan yields higher EPS (due to leverage).</span><span class="ar-inline">إذا كان الربح قبل الفوائد والضرائب المتوقع > 2,400,000 روبية، فإن خطة الديون تحقق ربحية أعلى للسهم (بسبب الرافعة).</span></li>
+                            <li><span class="en-inline">If expected EBIT < ₹2,400,000, the equity plan yields higher EPS.</span><span class="ar-inline">إذا كان الربح قبل الفوائد والضرائب المتوقع < 2,400,000 روبية، فإن خطة حقوق الملكية تحقق ربحية أعلى للسهم.</span></li>
+                        </ul>
+                        <p class="mt-2 text-sm text-gray-700"><strong><span class="en-inline">Decision Rule:</span><span class="ar-inline">قاعدة القرار:</span></strong> <span class="en-inline">Above the indifference point: Use debt. Below the indifference point: Use equity.</span><span class="ar-inline">فوق نقطة التعادل: استخدم الديون. تحت نقطة التعادل: استخدم حقوق الملكية.</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Share Value Approach -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                <h3 class="text-2xl font-bold text-navy-900 mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                    <span class="en-inline">Share Value Approach</span>
+                    <span class="ar-inline">أسلوب قيمة السهم</span>
+                </h3>
+                
+                <h4 class="text-xl font-bold text-navy-900 mb-4"><span class="en-inline">Example</span><span class="ar-inline">مثال</span></h4>
+                <p class="text-gray-600 mb-4"><span class="en-inline">There is a 25% chance that Sales will total $400,000, a 50% chance that sales will total $600,000, and a 25% chance that sales will total $800,000. Fixed operating costs total $200,000, and variable operating costs equal 50% of sales. Total Assets $500,000. The Firm is assumed to have no current liabilities. The book Value per share of Common Stock is $20. The firm is considering seven alternative capital structures. The debt ratios associated are at 0%, 10%, 20%, 30%, 40%, 50%, and 60% levels. Choose the optimal capital structure based on the EPS Approach and the Share Value Approach (tax=40%).</span><span class="ar-inline">هناك احتمال 25% أن إجمالي المبيعات سيكون 400,000 دولار، واحتمال 50% أن إجمالي المبيعات سيكون 600,000 دولار، واحتمال 25% أن إجمالي المبيعات سيكون 800,000 دولار. إجمالي تكاليف التشغيل الثابتة 200,000 دولار، وتكاليف التشغيل المتغيرة تساوي 50% من المبيعات. إجمالي الأصول 500,000 دولار. يُفترض أن الشركة ليس لديها خصوم متداولة. القيمة الدفترية للسهم من الأسهم العادية 20 دولار. تدرس الشركة سبعة هياكل رأس مال بديلة. نسب الديون المرتبطة بها هي عند مستويات 0%، 10%، 20%، 30%، 40%، 50%، و 60%. اختر هيكل رأس المال الأمثل بناءً على أسلوب ربح السهم وأسلوب قيمة السهم (الضريبة = 40%).</span></p>
+                
+                <button onclick="toggleMath('ex6')" class="w-full sm:w-auto py-2.5 px-6 bg-navy-900 hover:bg-navy-800 text-white font-semibold rounded-lg transition text-sm flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    <span class="en-inline">Reveal Steps & Conclusion</span>
+                    <span class="ar-inline">عرض الخطوات والاستنتاج</span>
+                </button>
+                <div id="ex6" class="hidden mt-6 p-5 bg-gray-50 border border-gray-200 rounded-xl text-sm space-y-4 text-navy-900">
+                    <ul class="list-decimal list-inside space-y-3 text-gray-700">
+                        <li><strong><span class="en-inline">Step 1:</span><span class="ar-inline">الخطوة 1:</span></strong> <span class="en-inline">Calculate the amount of debt & equity, No. of shares associated with each capital structure.</span><span class="ar-inline">احسب مبلغ الديون وحقوق الملكية، وعدد الأسهم المرتبط بكل هيكل رأس مال.</span></li>
+                        <li><strong><span class="en-inline">Step 2:</span><span class="ar-inline">الخطوة 2:</span></strong> <span class="en-inline">Calculate annual interest payments associated with alternative capital structure.</span><span class="ar-inline">احسب مدفوعات الفائدة السنوية المرتبطة بهيكل رأس المال البديل.</span></li>
+                        <li><strong><span class="en-inline">Step 3:</span><span class="ar-inline">الخطوة 3:</span></strong> <span class="en-inline">Calculate sales and associated EBIT.</span><span class="ar-inline">احسب المبيعات والربح قبل الفوائد والضرائب المرتبط بها.</span></li>
+                        <li><strong><span class="en-inline">Step 4:</span><span class="ar-inline">الخطوة 4:</span></strong> <span class="en-inline">Calculate EPS for different debt ratios (0%, 30%, 60%). Expected EPS = Sum(EPS × Probability).</span><span class="ar-inline">احسب ربح السهم لنسب الديون المختلفة (0%، 30%، 60%). ربح السهم المتوقع = مجموع (ربح السهم × الاحتمال).</span></li>
+                        <li><strong><span class="en-inline">Step 5:</span><span class="ar-inline">الخطوة 5:</span></strong> <span class="en-inline">Calculate Share Value (EPS / r) for different Debt Ratios.</span><span class="ar-inline">احسب قيمة السهم (ربح السهم / r) لنسب الديون المختلفة.</span></li>
+                    </ul>
+                    <div class="pt-4 border-t border-gray-200 bg-white p-4 rounded-lg border border-gray-200">
+                        <p class="font-bold text-teal-700 mb-2"><span class="en-inline">Conclusion:</span><span class="ar-inline">الاستنتاج:</span></p>
+                        <ul class="list-disc list-inside space-y-2 text-gray-700 ms-2">
+                            <li><span class="en-inline"><strong>Based on EPS-Approach:</strong> EPS is maximized at Debt ratio 50%. Hence, the optimal capital structure is 50% Debt and 50% Equity.</span><span class="ar-inline"><strong>بناءً على أسلوب ربح السهم:</strong> يتم تعظيم ربح السهم عند نسبة ديون 50%. وبالتالي، فإن هيكل رأس المال الأمثل هو 50% ديون و 50% حقوق ملكية.</span></li>
+                            <li><span class="en-inline"><strong>Based on Share-Value Approach:</strong> The maximum share value occurs at the capital structure associated with a debt ratio of 30%. Hence, the optimal capital structure is 30% debt and 70% Equity.</span><span class="ar-inline"><strong>بناءً على أسلوب قيمة السهم:</strong> تحدث أقصى قيمة للسهم عند هيكل رأس المال المرتبط بنسبة ديون 30%. وبالتالي، فإن هيكل رأس المال الأمثل هو 30% ديون و 70% حقوق ملكية.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXTERNAL QUIZ LINK SECTION -->
+        <section id="practice" class="scroll-mt-20">
+            <div class="bg-gradient-to-br from-navy-900 via-navy-800 to-teal-900 p-8 md:p-16 rounded-3xl text-white text-center shadow-2xl relative overflow-hidden">
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] opacity-40"></div>
+                <div class="relative z-10 max-w-2xl mx-auto">
+                    <div class="w-16 h-16 bg-teal-500/20 border border-teal-500/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <svg class="w-8 h-8 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                        <span class="en-block">Ready to Test Your Knowledge?</span>
+                        <span class="ar-block">هل أنت مستعد لاختبار معرفتك؟</span>
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-8">
+                        <span class="en-block">Visit our external quiz portal for additional questions, timed exams, and detailed performance analytics on Leverage and Capital Structure.</span>
+                        <span class="ar-block">زر بوابة الأسئلة الخارجية للحصول على أسئلة إضافية، امتحانات موقوتة، وتحليلات أداء مفصلة حول الرافعة المالية وهيكل رأس المال.</span>
+                    </p>
+                    <a href="https://example.com/quiz-corporate-finance-lec2" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-3 px-8 py-4 bg-teal-500 hover:bg-teal-400 text-white font-bold rounded-xl shadow-lg hover:shadow-teal-500/30 transition-all transform hover:-translate-y-1 text-lg">
+                        <span class="en-inline">Go to External Quiz Portal</span>
+                        <span class="ar-inline">الانتقال إلى بوابة الأسئلة الخارجية</span>
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                    <p class="text-sm text-gray-400 mt-6">
+                        <span class="en-inline">* The quiz will open in a new tab.</span>
+                        <span class="ar-inline">* سيتم فتح الاختبار في علامة تبويب جديدة.</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-navy-900 text-gray-400 py-12 mt-24 border-t border-navy-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center gap-2 mb-4">
+                <svg class="w-6 h-6 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <span class="text-white font-bold text-lg">
+                    <span class="en-inline">Advanced Corporate Finance</span>
+                    <span class="ar-inline">التمويل المؤسسي المتقدم</span>
+                </span>
+            </div>
+            <p class="text-sm">
+                <span class="en-block">Academic Educational Resource. Designed for students of Corporate Finance.</span>
+                <span class="ar-block">مورد تعليمي أكاديمي. مصمم لطلاب التمويل المؤسسي.</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuBtn.addEventListener('click', () => mobileMenu.classList.toggle('hidden'));
+        document.querySelectorAll('#mobile-menu a').forEach(link => link.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+
+        function toggleMath(id) { document.getElementById(id).classList.toggle('hidden'); }
+
+        // Language Toggle
+        const htmlEl = document.documentElement;
+        function toggleLanguage() {
+            if (htmlEl.getAttribute('lang') === 'en') {
+                htmlEl.setAttribute('lang', 'ar');
+                htmlEl.setAttribute('dir', 'rtl');
+                document.getElementById('lang-label').textContent = 'EN';
+                document.getElementById('lang-label-mobile').textContent = 'EN';
+            } else {
+                htmlEl.setAttribute('lang', 'en');
+                htmlEl.setAttribute('dir', 'ltr');
+                document.getElementById('lang-label').textContent = 'AR';
+                document.getElementById('lang-label-mobile').textContent = 'AR';
+            }
+        }
+        document.getElementById('lang-toggle').addEventListener('click', toggleLanguage);
+        document.getElementById('lang-toggle-mobile').addEventListener('click', toggleLanguage);
+    </script>
+<!-- 🎯 جزء تتبع الدرجات (نائم في غير الكويزات) -->
+<script>
+(function () {
+  var TRACK_URL = "https://script.google.com/macros/s/AKfycbzWhqHm8sl_fogZTB_E_WEgBwJjke3qZ574Yj8f8gI9_KYUelzA4-EI2azlvFE96YlC/exec";
+  var MAX_SCORE = 10;   // ← العظمى الافتراضية عندما لا تذكر النتيجةُ علتها
+  var QUIZZES = [
+    // { selector: "#q1-result", label: "Ch1 Quiz 1" },
+    // { selector: "#q2-result", label: "Ch1 Quiz 2" },
+  ];
+
+  var vid;
+  try {
+    var pm = location.search.match(/[?&]ebra_vid=([^&]+)/);
+    if (pm) {
+      vid = decodeURIComponent(pm[1]);
+      localStorage.setItem("ebra_vid", vid);
+    } else {
+      vid = localStorage.getItem("ebra_vid");
+      if (!vid) {
+        vid = "v-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 9);
+        localStorage.setItem("ebra_vid", vid);
+      }
+    }
+  } catch (e) { vid = "v-na"; }
+
+  function post(score, max, label) {
+    fetch(TRACK_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify({
+        type: "score",
+        visitorId: vid,
+        quiz: label || "Quiz",
+        score: score,
+        max: max,
+        percent: Math.round((score / max) * 100),
+        page: location.origin + location.pathname
+      })
+    }).catch(function () {});
+  }
+
+  function parseScore(txt) {
+    txt = txt || "";
+    var m = txt.match(/(\d+(?:[.,]\d+)?)\s*(?:\/|من|out of|-)\s*(\d+)/) || txt.match(/(\d+(?:[.,]\d+)?)/);
+    if (!m) return null;
+    return {
+      score: parseFloat(m[1].replace(",", ".")),
+      max: m[2] ? parseFloat(m[2]) : null
+    };
+  }
+
+  /* 3) اليدوي */
+  var lastManual = {};
+  window.EBRA = window.EBRA || {};
+  window.EBRA.trackScore = function (score, max, label) {
+    var k = label + "|" + score + "/" + max;
+    var now = Date.now();
+    if (lastManual[k] && now - lastManual[k] < 3000) return;
+    lastManual[k] = now;
+    post(Number(score), Number(max) || MAX_SCORE, label);
+  };
+
+  /* 1) + 2) المسح التلقائي */
+  var lastSel = {};
+  function scan() {
+    for (var i = 0; i < QUIZZES.length; i++) {
+      var qz = QUIZZES[i];
+      var el = document.querySelector(qz.selector);
+      if (!el) continue;
+      var p = parseScore(el.textContent);
+      if (!p) continue;
+      if (lastSel[qz.selector] === p.score) continue;   // إعادة المحاولة بنفس الدرجة لا تُكرر
+      lastSel[qz.selector] = p.score;
+      post(p.score, p.max || MAX_SCORE, qz.label);
+    }
+    var els = document.querySelectorAll("[data-ebra-quiz]");
+    for (var j = 0; j < els.length; j++) {
+      var el2 = els[j];
+      if (el2.getAttribute("data-ebra-done")) continue;
+      var p2 = parseScore(el2.textContent);
+      if (!p2) continue;
+      el2.setAttribute("data-ebra-done", "1");
+      post(p2.score, p2.max || MAX_SCORE, el2.getAttribute("data-ebra-quiz"));
+    }
+  }
+
+  var timer = null;
+  function queueScan() {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(scan, 400);
+  }
+  try {
+    var mo = new MutationObserver(queueScan);
+    mo.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+  } catch (e) {
+    setInterval(queueScan, 1500);
+  }
+  document.addEventListener("DOMContentLoaded", queueScan);
+  window.addEventListener("load", queueScan);
+})();
+</script>
+
+<!-- 📡 جزء تتبع الزيارات -->
+<script>
+(function () {
+  var TRACK_URL = "https://script.google.com/macros/s/AKfycbzWhqHm8sl_fogZTB_E_WEgBwJjke3qZ574Yj8f8gI9_KYUelzA4-EI2azlvFE96YlC/exec";
+  var vid;
+  try {
+    var pm = location.search.match(/[?&]ebra_vid=([^&]+)/);
+    if (pm) {
+      vid = decodeURIComponent(pm[1]);
+      localStorage.setItem("ebra_vid", vid);
+    } else {
+      vid = localStorage.getItem("ebra_vid");
+      if (!vid) {
+        vid = "v-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 9);
+        localStorage.setItem("ebra_vid", vid);
+      }
+    }
+  } catch (e) { vid = "v-na"; }
+  fetch(TRACK_URL, {
+    method: "POST",
+    mode: "cors",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({
+      visitorId: vid,
+      page: location.origin + location.pathname,
+      referrer: document.referrer || "Direct",
+      language: navigator.language || "",
+      screen: window.screen ? (screen.width + "x" + screen.height) : "",
+      ua: navigator.userAgent
+    })
+  }).catch(function () {});
+})();
+</script>
+
+</body>
+</html>
